@@ -71,8 +71,8 @@ static Print *serialPrint = &Serial;
 SerialModule::SerialModule() : StreamAPI(&Serial1), concurrency::OSThread("Serial") {}
 static Print *serialPrint = &Serial1;
 #else
-SerialModule::SerialModule() : StreamAPI(&Serial2), concurrency::OSThread("Serial") {}
-static Print *serialPrint = &Serial2;
+SerialModule::SerialModule() : StreamAPI(&Serial), concurrency::OSThread("Serial") {}
+static Print *serialPrint = &Serial;
 #endif
 
 char serialBytes[512];
@@ -156,8 +156,8 @@ int32_t SerialModule::runOnce()
 
             if (moduleConfig.serial.override_console_serial_port) {
 #ifdef RP2040_SLOW_CLOCK
-                Serial2.flush();
-                serialPrint = &Serial2;
+                Serial.flush();
+                serialPrint = &Serial;
 #else
                 Serial.flush();
                 serialPrint = &Serial;
@@ -175,7 +175,7 @@ int32_t SerialModule::runOnce()
             }
 #elif defined(ARCH_STM32WL)
 #ifndef RAK3172
-            HardwareSerial *serialInstance = &Serial2;
+            HardwareSerial *serialInstance = &Serial;
 #else
             HardwareSerial *serialInstance = &Serial1;
 #endif
@@ -188,8 +188,8 @@ int32_t SerialModule::runOnce()
 #elif defined(ARCH_ESP32)
 
             if (moduleConfig.serial.rxd && moduleConfig.serial.txd) {
-                Serial2.setRxBufferSize(RX_BUFFER);
-                Serial2.begin(baud, SERIAL_8N1, moduleConfig.serial.rxd, moduleConfig.serial.txd);
+                Serial.setRxBufferSize(RX_BUFFER);
+                Serial.begin(baud, SERIAL_8N1, moduleConfig.serial.rxd, moduleConfig.serial.txd);
             } else {
                 Serial.begin(baud);
                 Serial.setTimeout(moduleConfig.serial.timeout > 0 ? moduleConfig.serial.timeout : TIMEOUT);
@@ -198,17 +198,17 @@ int32_t SerialModule::runOnce()
     !defined(ELECROW_ThinkNode_M1) && !defined(ELECROW_ThinkNode_M5)
             if (moduleConfig.serial.rxd && moduleConfig.serial.txd) {
 #ifdef ARCH_RP2040
-                Serial2.setFIFOSize(RX_BUFFER);
-                Serial2.setPinout(moduleConfig.serial.txd, moduleConfig.serial.rxd);
+                Serial.setFIFOSize(RX_BUFFER);
+                Serial.setPinout(moduleConfig.serial.txd, moduleConfig.serial.rxd);
 #else
-                Serial2.setPins(moduleConfig.serial.rxd, moduleConfig.serial.txd);
+                Serial.setPins(moduleConfig.serial.rxd, moduleConfig.serial.txd);
 #endif
-                Serial2.begin(baud, SERIAL_8N1);
-                Serial2.setTimeout(moduleConfig.serial.timeout > 0 ? moduleConfig.serial.timeout : TIMEOUT);
+                Serial.begin(baud, SERIAL_8N1);
+                Serial.setTimeout(moduleConfig.serial.timeout > 0 ? moduleConfig.serial.timeout : TIMEOUT);
             } else {
 #ifdef RP2040_SLOW_CLOCK
-                Serial2.begin(baud, SERIAL_8N1);
-                Serial2.setTimeout(moduleConfig.serial.timeout > 0 ? moduleConfig.serial.timeout : TIMEOUT);
+                Serial.begin(baud, SERIAL_8N1);
+                Serial.setTimeout(moduleConfig.serial.timeout > 0 ? moduleConfig.serial.timeout : TIMEOUT);
 #else
                 Serial.begin(baud, SERIAL_8N1);
                 Serial.setTimeout(moduleConfig.serial.timeout > 0 ? moduleConfig.serial.timeout : TIMEOUT);
@@ -272,7 +272,7 @@ int32_t SerialModule::runOnce()
                     serialPayloadSize = Serial1.readBytes(serialBytes, meshtastic_Constants_DATA_PAYLOAD_LEN);
 #else
 #ifndef RAK3172
-                HardwareSerial *serialInstance = &Serial2;
+                HardwareSerial *serialInstance = &Serial;
 #else
                 HardwareSerial *serialInstance = &Serial1;
 #endif
@@ -552,11 +552,11 @@ void SerialModule::processWXSerial()
     static float rain = 0;
     bool gotwind = false;
 
-    while (Serial2.available()) {
+    while (Serial.available()) {
         // clear serialBytes buffer
         memset(serialBytes, '\0', sizeof(serialBytes));
         // memset(formattedString, '\0', sizeof(formattedString));
-        serialPayloadSize = Serial2.readBytes(serialBytes, 512);
+        serialPayloadSize = Serial.readBytes(serialBytes, 512);
         // check for a strings we care about
         // example output of serial data fields from the WS85
         // WindDir      = 79
@@ -634,8 +634,8 @@ void SerialModule::processWXSerial()
             }
             break;
             // clear the input buffer
-            while (Serial2.available() > 0) {
-                Serial2.read(); // Read and discard the bytes in the input buffer
+            while (Serial.available() > 0) {
+                Serial.read(); // Read and discard the bytes in the input buffer
             }
         }
     }

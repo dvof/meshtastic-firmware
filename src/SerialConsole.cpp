@@ -15,7 +15,7 @@
 #endif
 
 #ifdef RP2040_SLOW_CLOCK
-#define Port Serial2
+#define Port Serial
 #else
 #ifdef USER_DEBUG_PORT // change by WayenWeng
 #define Port USER_DEBUG_PORT

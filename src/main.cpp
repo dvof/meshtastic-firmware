@@ -1243,6 +1243,24 @@ void setup()
     }
 #endif
 
+    Serial.println("Test Serial");
+    if (radioType == STM32WLx_RADIO)
+    {
+        LOG_INFO("Test");
+        Serial.println("Test Serial");
+        while (true)
+        {
+            if (Serial.available()) {
+                char c = Serial.read();    
+                if (c == 'q')
+                {
+                    break;
+                }
+                Serial.write(c);           
+            }
+        }
+    }
+
 #if defined(RF95_IRQ) && RADIOLIB_EXCLUDE_SX127X != 1
     if ((!rIf) && (config.lora.region != meshtastic_Config_LoRaConfig_RegionCode_LORA_24)) {
         rIf = new RF95Interface(RadioLibHAL, LORA_CS, RF95_IRQ, RF95_RESET, RF95_DIO1);
