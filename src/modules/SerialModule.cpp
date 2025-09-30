@@ -101,6 +101,8 @@ bool SerialModule::isValidConfig(const meshtastic_ModuleConfig_SerialConfig &con
 
 SerialModuleRadio::SerialModuleRadio() : MeshModule("SerialModuleRadio")
 {
+    Serial.print("moduleConfig.serial.mode: ");
+    Serial.println(moduleConfig.serial.mode);
     switch (moduleConfig.serial.mode) {
     case meshtastic_ModuleConfig_SerialConfig_Serial_Mode_TEXTMSG:
         ourPortNum = meshtastic_PortNum_TEXT_MESSAGE_APP;
@@ -146,6 +148,9 @@ int32_t SerialModule::runOnce()
 
     if (!moduleConfig.serial.enabled)
         return disable();
+
+    Serial.print("moduleConfig.serial.mode: ");
+    Serial.println(moduleConfig.serial.mode);
 
     if (moduleConfig.serial.override_console_serial_port || (moduleConfig.serial.rxd && moduleConfig.serial.txd)) {
         if (firstTime) {
