@@ -428,6 +428,7 @@ void setup()
     serialSinceMsec = millis();
 
     LOG_INFO("\n\n//\\ E S H T /\\ S T / C\n");
+    LOG_INFO("moduleConfig.serial.mode: %d", moduleConfig.serial.mode); 
 
     initDeepSleep();
 
