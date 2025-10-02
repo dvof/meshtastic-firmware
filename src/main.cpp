@@ -434,6 +434,7 @@ void setup()
     serialSinceMsec = millis();
 
     LOG_INFO("\n\n//\\ E S H T /\\ S T / C\n");
+    Serial.println("Test Serial");
     moduleConfig.serial.enabled = true;
 
     initDeepSleep();
