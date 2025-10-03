@@ -28,11 +28,19 @@
 
 SerialConsole *console;
 
+String TEST_STRING_1;
+String TEST_STRING_2;
+String TEST_STRING_3;
+String TEST_STRING_4;
+String TEST_STRING_5;
+
 void consoleInit()
 {
     auto sc = new SerialConsole(); // Must be dynamically allocated because we are now inheriting from thread
+    TEST_STRING_1="TEST";
 
 #if defined(SERIAL_HAS_ON_RECEIVE)
+    TEST_STRING_1="TEST 1";
     // onReceive does only exist for HardwareSerial not for USB CDC serial
     Port.onReceive([sc]() { sc->rxInt(); });
 #endif
@@ -53,6 +61,7 @@ SerialConsole::SerialConsole() : StreamAPI(&Port), RedirectablePrint(&Port), con
     assert(!console);
     console = this;
     canWrite = false; // We don't send packets to our port until it has talked to us first
+    TEST_STRING_2="TEST";
 
 #ifdef RP2040_SLOW_CLOCK
     Port.setTX(SERIAL2_TX);
@@ -61,6 +70,7 @@ SerialConsole::SerialConsole() : StreamAPI(&Port), RedirectablePrint(&Port), con
     Port.begin(SERIAL_BAUD);
 #if defined(ARCH_NRF52) || defined(CONFIG_IDF_TARGET_ESP32S2) || defined(CONFIG_IDF_TARGET_ESP32S3) || defined(ARCH_RP2040) ||   \
     defined(CONFIG_IDF_TARGET_ESP32C3) || defined(CONFIG_IDF_TARGET_ESP32C6)
+    TEST_STRING_2="TEST 1";
     time_t timeout = millis();
     while (!Port) {
         if (Throttle::isWithinTimespanMs(timeout, FIVE_SECONDS_MS)) {
@@ -71,12 +81,14 @@ SerialConsole::SerialConsole() : StreamAPI(&Port), RedirectablePrint(&Port), con
     }
 #endif
 #if !ARCH_PORTDUINO
+    TEST_STRING_3="TEST";
     emitRebooted();
 #endif
 }
 
 int32_t SerialConsole::runOnce()
 {
+    TEST_STRING_4="TEST";
 #ifdef HELTEC_MESH_SOLAR
     // After enabling the mesh solar serial port module configuration, command processing is handled by the serial port module.
     if (moduleConfig.serial.enabled && moduleConfig.serial.override_console_serial_port &&
@@ -124,6 +136,7 @@ bool SerialConsole::checkIsConnected()
  */
 bool SerialConsole::handleToRadio(const uint8_t *buf, size_t len)
 {
+    TEST_STRING_5 = "TRUE";
     // only talk to the API once the configuration has been loaded and we're sure the serial port is not disabled.
     if (config.has_lora && config.security.serial_enabled) {
         // Switch to protobufs for log messages

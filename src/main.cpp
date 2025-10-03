@@ -295,6 +295,12 @@ void printInfo()
     LOG_INFO("S:B:%d,%s,%s,%s", HW_VENDOR, optstr(APP_VERSION), optstr(APP_ENV), optstr(APP_REPO));
 }
 #ifndef PIO_UNIT_TESTING
+extern char TEST_STRING_TEMP[256];
+extern String TEST_STRING_1;
+extern String TEST_STRING_2;
+extern String TEST_STRING_3;
+extern String TEST_STRING_4;
+extern String TEST_STRING_5;
 void setup()
 {
 
@@ -410,6 +416,10 @@ void setup()
 #endif
 
 #ifdef DEBUG_PORT
+    Serial1.setRxBufferSize(256);
+    Serial1.begin(115200, SERIAL_8N1, 1, 2); // D0, D1
+    Serial2.setRxBufferSize(256);
+    Serial2.begin(115200, SERIAL_8N1, 3, 4); // D2, D3
     consoleInit(); // Set serial baud rate and init our mesh console
 #endif
 
@@ -429,7 +439,24 @@ void setup()
 
     LOG_INFO("\n\n//\\ E S H T /\\ S T / C\n");
     LOG_INFO("moduleConfig.serial.mode: %d", moduleConfig.serial.mode); 
+    LOG_INFO("TEST 1: `%s`", TEST_STRING_1);
+    LOG_INFO("TEST 2: `%s`", TEST_STRING_2);
+    LOG_INFO("TEST 3: `%s`", TEST_STRING_3);
+    LOG_INFO("TEST 4: `%s`", TEST_STRING_4);
+//    while (true)
+//    {
+        Serial.println("Test Serial");
+//        delay(1000);
+//    }
 
+//    int incomingByte = 0;
+//    while((char)incomingByte != 'q')
+//    {
+//        if (Serial.available() > 0) {
+//            incomingByte = Serial.read();
+//            Serial1.println(incomingByte, HEX);
+//        }
+//    }
     initDeepSleep();
 
 #if defined(MODEM_POWER_EN)
@@ -568,12 +595,14 @@ void setup()
     digitalWrite(AQ_SET_PIN, HIGH);
 #endif
 
+    LOG_INFO("TEST: before power setup");
     // Currently only the tbeam has a PMU
     // PMU initialization needs to be placed before i2c scanning
     power = new Power();
     power->setStatusHandler(powerStatus);
     powerStatus->observe(&power->newStatus);
     power->setup(); // Must be after status handler is installed, so that handler gets notified of the initial configuration
+    LOG_INFO("TEST: after power setup");
 
 #if !MESHTASTIC_EXCLUDE_I2C
     // We need to scan here to decide if we have a screen for nodeDB.init() and because power has been applied to
@@ -760,6 +789,7 @@ void setup()
 #endif
 
     // LED init
+    LOG_INFO("TEST: before pin");
 
 #ifdef LED_PIN
     pinMode(LED_PIN, OUTPUT);
@@ -1585,6 +1615,11 @@ void scannerToSensorsMap(const std::unique_ptr<ScanI2CTwoWire> &i2cScanner, Scan
 void loop()
 {
     runASAP = false;
+    if (!TEST_STRING_5.isEmpty())
+    {
+        LOG_INFO("TEST 5: `%s`", TEST_STRING_5);
+        delay(1000);
+    }
 
 #ifdef ARCH_ESP32
     esp32Loop();

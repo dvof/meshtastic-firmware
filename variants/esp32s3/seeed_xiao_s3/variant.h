@@ -39,6 +39,7 @@ L76K GPS Module Information : https://www.seeedstudio.com/L76K-GNSS-Module-for-S
 #define BATTERY_PIN -1
 #define ADC_CHANNEL ADC1_GPIO1_CHANNEL
 #define BATTERY_SENSE_RESOLUTION_BITS 12
+//#define USER_DEBUG_PORT Serial1
 
 /*Warning:
     https://www.seeedstudio.com/L76K-GNSS-Module-for-Seeed-Studio-XIAO-p-5864.html
