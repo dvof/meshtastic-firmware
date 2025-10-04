@@ -46,9 +46,11 @@ PhoneAPI::~PhoneAPI()
 }
 
 void PhoneAPI::handleStartConfig()
-{
+{ 
+            Serial1.println("TEST 17");
     // Must be before setting state (because state is how we know !connected)
     if (!isConnected()) {
+            Serial1.println("TEST 18");
         onConnectionChanged(true);
         observe(&service->fromNumChanged);
 #ifdef FSCom
@@ -56,6 +58,7 @@ void PhoneAPI::handleStartConfig()
 #endif
     }
 
+            Serial1.println("TEST 19");
     // even if we were already connected - restart our state machine
     if (config_nonce == SPECIAL_NONCE_ONLY_NODES) {
         // If client only wants node info, jump directly to sending nodes
@@ -64,15 +67,18 @@ void PhoneAPI::handleStartConfig()
     } else {
         state = STATE_SEND_MY_INFO;
     }
+            Serial1.println("TEST 20");
     pauseBluetoothLogging = true;
     spiLock->lock();
     filesManifest = getFiles("/", 10);
     spiLock->unlock();
+            Serial1.println("TEST 21");
     LOG_DEBUG("Got %d files in manifest", filesManifest.size());
 
     LOG_INFO("Start API client config");
     nodeInfoForPhone.num = 0; // Don't keep returning old nodeinfos
     resetReadIndex();
+            Serial1.println("TEST 22");
 }
 
 void PhoneAPI::close()
@@ -122,15 +128,21 @@ bool PhoneAPI::checkConnectionTimeout()
  */
 bool PhoneAPI::handleToRadio(const uint8_t *buf, size_t bufLength)
 {
+
+    Serial1.println("TEST 11");
     powerFSM.trigger(EVENT_CONTACT_FROM_PHONE); // As long as the phone keeps talking to us, don't let the radio go to sleep
     lastContactMsec = millis();
 
     memset(&toRadioScratch, 0, sizeof(toRadioScratch));
+    Serial1.println("TEST 12");
     if (pb_decode_from_bytes(buf, bufLength, &meshtastic_ToRadio_msg, &toRadioScratch)) {
+            Serial1.println("TEST 15");
         switch (toRadioScratch.which_payload_variant) {
         case meshtastic_ToRadio_packet_tag:
+            Serial1.println("TEST 13");
             return handleToRadioPacket(toRadioScratch.packet);
         case meshtastic_ToRadio_want_config_id_tag:
+            Serial1.println("TEST 16");
             config_nonce = toRadioScratch.want_config_id;
             LOG_INFO("Client wants config, nonce=%u", config_nonce);
             handleStartConfig();
@@ -168,6 +180,7 @@ bool PhoneAPI::handleToRadio(const uint8_t *buf, size_t bufLength)
     } else {
         LOG_ERROR("Error: ignore malformed toradio");
     }
+            Serial1.println("TEST 14");
 
     return false;
 }

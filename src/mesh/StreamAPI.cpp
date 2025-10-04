@@ -46,7 +46,9 @@ int32_t StreamAPI::readStream(char *buf, uint16_t bufLen)
  */
 void StreamAPI::writeStream()
 {
+//    Serial1.println("TEST 6");
     if (canWrite) {
+        Serial1.println("TEST 7");
         uint32_t len;
         do {
             // Send every packet we can
@@ -115,6 +117,7 @@ int32_t StreamAPI::readStream()
         bool recentRx = Throttle::isWithinTimespanMs(lastRxMsec, 2000);
         return recentRx ? 5 : 250;
     } else {
+        Serial1.println("TEST 3");
         while (stream->available()) { // Currently we never want to block
             int cInt = stream->read();
             if (cInt < 0)
@@ -152,12 +155,14 @@ int32_t StreamAPI::readStream()
                 if (rxPtr != 0)                        // Is packet still considered 'good'?
                     if (ptr + 1 >= len + HEADER_LEN) { // have we received all of the payload?
                         rxPtr = 0;                     // start over again on the next packet
-
+                        Serial1.println("TEST 4");
+                        
                         // If we didn't just fail the packet and we now have the right # of bytes, parse it
                         handleToRadio(rxBuf + HEADER_LEN, len);
                     }
             }
         }
+        Serial1.println("TEST 5");
 
         // we had bytes available this time, so assume we might have them next time also
         lastRxMsec = millis();

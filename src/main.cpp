@@ -295,6 +295,14 @@ void printInfo()
     LOG_INFO("S:B:%d,%s,%s,%s", HW_VENDOR, optstr(APP_VERSION), optstr(APP_ENV), optstr(APP_REPO));
 }
 #ifndef PIO_UNIT_TESTING
+extern String TEST_STRING_1;
+extern String TEST_STRING_2;
+extern String TEST_STRING_3;
+extern String TEST_STRING_4;
+//extern String TEST_STRING_5;
+//extern int TEST_INT_1;
+//extern int TEST_INT_2;
+//extern int TEST_INT_3;
 void setup()
 {
 #if defined(R1_NEO)
@@ -416,8 +424,14 @@ void setup()
 #endif
 
 #ifdef DEBUG_PORT
+//    Serial1.setRxBufferSize(256);
+//    Serial1.begin(115200, SERIAL_8N1, 1, 2); // D0, D1
+//    Serial2.setRxBufferSize(256);
+//    Serial2.begin(115200, SERIAL_8N1, 3, 4); // D2, D3
     consoleInit(); // Set serial baud rate and init our mesh console
+    LOG_INFO("TEST 123123");
 #endif
+    LOG_INFO("TEST 22222");
 
 #ifdef UNPHONE
     unphone.printStore();
@@ -435,8 +449,28 @@ void setup()
 
     LOG_INFO("\n\n//\\ E S H T /\\ S T / C\n");
     Serial.println("Test Serial");
-    moduleConfig.serial.enabled = true;
+//    moduleConfig.serial.enabled = true;
+    LOG_INFO("moduleConfig.serial.mode: %d", moduleConfig.serial.mode); 
+    LOG_INFO("TEST 1: `%s`", TEST_STRING_1.c_str());
+    LOG_INFO("TEST 2: `%s`", TEST_STRING_2.c_str());
+    LOG_INFO("TEST 3: `%s`", TEST_STRING_3.c_str());
+    LOG_INFO("TEST 4: `%s`", TEST_STRING_4.c_str());
+    Serial1.begin(115200);
+    Serial1.println("TEST SERIAL1");
+//    while (true)
+//    {
+        Serial.println("Test Serial");
+//        delay(1000);
+//    }
 
+//    int incomingByte = 0;
+//    while((char)incomingByte != 'q')
+//    {
+//        if (Serial.available() > 0) {
+//            incomingByte = Serial.read();
+//            Serial1.println(incomingByte, HEX);
+//        }
+//    }
     initDeepSleep();
 
 #if defined(MODEM_POWER_EN)
@@ -575,12 +609,14 @@ void setup()
     digitalWrite(AQ_SET_PIN, HIGH);
 #endif
 
+    LOG_INFO("TEST: before power setup");
     // Currently only the tbeam has a PMU
     // PMU initialization needs to be placed before i2c scanning
     power = new Power();
     power->setStatusHandler(powerStatus);
     powerStatus->observe(&power->newStatus);
     power->setup(); // Must be after status handler is installed, so that handler gets notified of the initial configuration
+    LOG_INFO("TEST: after power setup");
 
 #if !MESHTASTIC_EXCLUDE_I2C
     // We need to scan here to decide if we have a screen for nodeDB.init() and because power has been applied to
@@ -767,6 +803,7 @@ void setup()
 #endif
 
     // LED init
+    LOG_INFO("TEST: before pin");
 
 #ifdef LED_PIN
     pinMode(LED_PIN, OUTPUT);
@@ -1496,6 +1533,7 @@ void setup()
 
     // We manually run this to update the NodeStatus
     nodeDB->notifyObservers(true);
+    LOG_INFO("END OF SETUP");
 }
 
 #endif
@@ -1584,6 +1622,23 @@ void scannerToSensorsMap(const std::unique_ptr<ScanI2CTwoWire> &i2cScanner, Scan
 void loop()
 {
     runASAP = false;
+//    static uint32_t prev = 0;
+//    uint32_t current = millis();
+//    if (current - prev > 1000)
+//    {
+//        prev = current;
+//        LOG_INFO("TEST I 1: %d", TEST_INT_1);
+//        LOG_INFO("TEST I 2: %d", TEST_INT_2);
+//        LOG_INFO("TEST I 3: %d", TEST_INT_3);
+//    }
+//    static int i_test = 0;
+//    if (TEST_STRING_5.length() != 0 || TEST_STRING_4.length() != 0 || i_test > 1000) 
+//    {
+//        LOG_INFO("TEST 4: `%s`", TEST_STRING_4.c_str());
+//        LOG_INFO("TEST 5: `%s`", TEST_STRING_5.c_str());
+//        delay(1000);
+//    }
+//    i_test++;
 
 #ifdef ARCH_ESP32
     esp32Loop();

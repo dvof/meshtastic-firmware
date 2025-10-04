@@ -28,11 +28,24 @@
 
 SerialConsole *console;
 
+String TEST_STRING_1;
+String TEST_STRING_2;
+String TEST_STRING_3;
+String TEST_STRING_4;
+//String TEST_STRING_5;
+//String TEST_STRING_6;
+//String TEST_STRING_7;
+//int TEST_INT_1 = 0;
+//int TEST_INT_2 = 0;
+//int TEST_INT_3 = 0;
+
 void consoleInit()
 {
+    TEST_STRING_1="TEST";
     auto sc = new SerialConsole(); // Must be dynamically allocated because we are now inheriting from thread
 
 #if defined(SERIAL_HAS_ON_RECEIVE)
+    TEST_STRING_1="TEST 1";
     // onReceive does only exist for HardwareSerial not for USB CDC serial
     Port.onReceive([sc]() { sc->rxInt(); });
 #endif
@@ -53,6 +66,7 @@ SerialConsole::SerialConsole() : StreamAPI(&Port), RedirectablePrint(&Port), con
     assert(!console);
     console = this;
     canWrite = false; // We don't send packets to our port until it has talked to us first
+    TEST_STRING_2="TEST";
 
 #ifdef RP2040_SLOW_CLOCK
     Port.setTX(SERIAL2_TX);
@@ -61,6 +75,7 @@ SerialConsole::SerialConsole() : StreamAPI(&Port), RedirectablePrint(&Port), con
     Port.begin(SERIAL_BAUD);
 #if defined(ARCH_NRF52) || defined(CONFIG_IDF_TARGET_ESP32S2) || defined(CONFIG_IDF_TARGET_ESP32S3) || defined(ARCH_RP2040) ||   \
     defined(CONFIG_IDF_TARGET_ESP32C3) || defined(CONFIG_IDF_TARGET_ESP32C6)
+    TEST_STRING_2="TEST 1";
     time_t timeout = millis();
     while (!Port) {
         if (Throttle::isWithinTimespanMs(timeout, FIVE_SECONDS_MS)) {
@@ -71,6 +86,7 @@ SerialConsole::SerialConsole() : StreamAPI(&Port), RedirectablePrint(&Port), con
     }
 #endif
 #if !ARCH_PORTDUINO
+    TEST_STRING_3="TEST";
     emitRebooted();
 #endif
 }
@@ -89,6 +105,7 @@ int32_t SerialConsole::runOnce()
 #if defined(SERIAL_HAS_ON_RECEIVE) || defined(CONFIG_IDF_TARGET_ESP32S2)
     return Port.available() ? delay : INT32_MAX;
 #elif defined(IS_USB_SERIAL)
+//    Serial1.print("SERIAL: %d", HWCDC::isPlugged() ? delay : (1000 * 20));
     return HWCDC::isPlugged() ? delay : (1000 * 20);
 #else
     return delay;
@@ -124,16 +141,26 @@ bool SerialConsole::checkIsConnected()
  */
 bool SerialConsole::handleToRadio(const uint8_t *buf, size_t len)
 {
+//    TEST_STRING_5 = "TRUE";
+    
+    Serial1.print("config.has_lora ");
+    Serial1.println(config.has_lora );
+    Serial1.print("config.security.serial_enabled");
+    Serial1.println(config.security.serial_enabled);
+
     // only talk to the API once the configuration has been loaded and we're sure the serial port is not disabled.
     if (config.has_lora && config.security.serial_enabled) {
+        Serial1.println("TEST 8");
         // Switch to protobufs for log messages
         usingProtobufs = true;
         canWrite = true;
 
         return StreamAPI::handleToRadio(buf, len);
     } else {
+        Serial1.println("TEST 9");
         return false;
     }
+        Serial1.println("TEST 10");
 }
 
 void SerialConsole::log_to_serial(const char *logLevel, const char *format, va_list arg)

@@ -101,6 +101,8 @@ bool renameFile(const char *pathFrom, const char *pathTo)
 
 #include <vector>
 
+#include <malloc.h>
+
 /**
  * @brief Get the list of files in a directory.
  *
@@ -121,13 +123,21 @@ std::vector<meshtastic_FileInfo> getFiles(const char *dirname, uint8_t levels)
     if (!root.isDirectory())
         return filenames;
 
+    Serial1.print("TEST, stack size ");
+    struct mallinfo mi = mallinfo();
+    Serial1.println(mi.fordblks);
+    delay(10);
     File file = root.openNextFile();
+    mi = mallinfo();
+    Serial1.println(mi.fordblks);
     while (file) {
         if (file.isDirectory() && !String(file.name()).endsWith(".")) {
             if (levels) {
 #ifdef ARCH_ESP32
                 std::vector<meshtastic_FileInfo> subDirFilenames = getFiles(file.path(), levels - 1);
 #else
+            Serial1.println("TEST 29");
+            delay(100);
                 std::vector<meshtastic_FileInfo> subDirFilenames = getFiles(file.name(), levels - 1);
 #endif
                 filenames.insert(filenames.end(), subDirFilenames.begin(), subDirFilenames.end());
@@ -138,6 +148,8 @@ std::vector<meshtastic_FileInfo> getFiles(const char *dirname, uint8_t levels)
 #ifdef ARCH_ESP32
             strcpy(fileInfo.file_name, file.path());
 #else
+            Serial1.println("TEST 30");
+            delay(100);
             strcpy(fileInfo.file_name, file.name());
 #endif
             if (!String(fileInfo.file_name).endsWith(".")) {
@@ -147,7 +159,11 @@ std::vector<meshtastic_FileInfo> getFiles(const char *dirname, uint8_t levels)
         }
         file = root.openNextFile();
     }
+            Serial1.println("TEST 31");
+            delay(100);
     root.close();
+            Serial1.println("TEST 32");
+            delay(100);
 #endif
     return filenames;
 }
@@ -288,11 +304,15 @@ void fsInit()
 {
 #ifdef FSCom
     concurrency::LockGuard g(spiLock);
+            Serial1.println("TEST 21");
     preFSBegin();
+            Serial1.println("TEST 22");
     if (!FSBegin()) {
+            Serial1.println("TEST 23");
         LOG_ERROR("Filesystem mount failed");
         // assert(0); This auto-formats the partition, so no need to fail here.
     }
+            Serial1.println("TEST 24");
 #if defined(ARCH_ESP32)
     LOG_DEBUG("Filesystem files (%d/%d Bytes):", FSCom.usedBytes(), FSCom.totalBytes());
 #else
