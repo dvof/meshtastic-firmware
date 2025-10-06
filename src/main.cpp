@@ -297,6 +297,8 @@ void printInfo()
 #ifndef PIO_UNIT_TESTING
 void setup()
 {
+    Serial1.begin(115200);
+    Serial1.println("TEST Serial1");
 
 #if defined(PIN_POWER_EN)
     pinMode(PIN_POWER_EN, OUTPUT);
