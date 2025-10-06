@@ -1053,7 +1053,7 @@ typedef struct _meshtastic_ClientNotification {
 /* Individual File info for the device */
 typedef struct _meshtastic_FileInfo {
     /* The fully qualified path of the file */
-    char file_name[228];
+    char file_name[64];
     /* The size of the file in bytes */
     uint32_t size_bytes;
 } meshtastic_FileInfo;
