@@ -150,7 +150,7 @@ std::vector<meshtastic_FileInfo> getFiles(const char *dirname, uint8_t levels)
 #else
             Serial1.println("TEST 30");
             delay(100);
-            strcpy(fileInfo.file_name, file.name());
+            strncpy(fileInfo.file_name, file.name(), sizeof(fileInfo.file_name));
 #endif
             if (!String(fileInfo.file_name).endsWith(".")) {
                 filenames.push_back(fileInfo);
